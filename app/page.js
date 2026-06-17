@@ -14,6 +14,7 @@ export default function Home() {
   const [adProgress, setAdProgress] = useState(0)
   const [adWatchCount, setAdWatchCount] = useState(0)
   const [adPlaying, setAdPlaying] = useState(false)
+  const [aiImage, setAiImage] = useState(null)
 
   const stylesList = [
     { id: 'modern', icon: 'fa-building', label: 'Modern' },
@@ -62,16 +63,35 @@ export default function Home() {
     }
   }
 
-  function handleDecorate() {
+  async function handleDecorate() {
     if (!preview) { alert('Please upload a room photo!'); return }
     if (attemptsLeft <= 0) { setShowAd(true); return }
+
     setLoading(true)
     setResults(null)
-    setTimeout(() => {
-      setAttemptsLeft(prev => prev - 1)
-      setResults(suggestions[selectedStyle])
-      setLoading(false)
-    }, 2000)
+    setAiImage(null)
+
+    try {
+      const response = await fetch('/api/decorate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ style: selectedStyle })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setAttemptsLeft(prev => prev - 1)
+        setAiImage(data.image)
+        setResults(suggestions[selectedStyle])
+      } else {
+        alert('AI error: ' + data.error)
+      }
+    } catch (error) {
+      alert('Something went wrong!')
+    }
+
+    setLoading(false)
   }
 
   function watchAd() {
@@ -208,6 +228,20 @@ export default function Home() {
           {/* Results */}
           {results && !showAd && (
             <div className={styles.resultCard}>
+              {aiImage && (
+                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                  <Image
+                    src={aiImage}
+                    alt="AI Decorated Room"
+                    width={800}
+                    height={500}
+                    style={{ width: '100%', height: 'auto', borderRadius: '15px', boxShadow: '0 5px 20px rgba(0,0,0,0.2)' }}
+                  />
+                  <p style={{ marginTop: '10px', color: '#7f8c8d', fontSize: '0.9rem' }}>
+                    🤖 AI Generated Room Design
+                  </p>
+                </div>
+              )}
               <h5><i className="fas fa-star"></i> AI Decoration Suggestions</h5>
               {results.map((item, i) => (
                 <div className={styles.suggestionItem} key={i}>

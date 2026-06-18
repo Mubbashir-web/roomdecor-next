@@ -191,11 +191,12 @@ export default function Home() {
             ) : (
               <div className={styles.previewArea}>
                 <Image
-                  src={preview}
-                  alt="Room Preview"
+                  src={aiImage}
+                  alt="AI Decorated Room"
                   width={800}
-                  height={350}
-                  style={{ width: '100%', height: '350px', objectFit: 'cover', borderRadius: '15px' }}
+                  height={600}
+                  style={{ width: '100%', height: 'auto', borderRadius: '15px', boxShadow: '0 5px 20px rgba(0,0,0,0.2)' }}
+                  unoptimized={true}
                 />
                 <button onClick={() => setPreview(null)} className={styles.changeBtn}>
                   <i className="fas fa-redo"></i> Change Photo

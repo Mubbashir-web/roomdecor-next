@@ -1,3 +1,5 @@
+export const maxDuration = 60
+
 export async function POST(request) {
   try {
     const { style } = await request.json()
@@ -12,20 +14,26 @@ export async function POST(request) {
     const prompt = prompts[style] || prompts.modern
 
     const response = await fetch(
-      "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1",
+      "https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5",
       {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${process.env.HUGGING_FACE_API_KEY}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ inputs: prompt }),
+        body: JSON.stringify({
+          inputs: prompt,
+          options: {
+            wait_for_model: true
+          }
+        }),
+        signal: AbortSignal.timeout(55000)
       }
     )
 
     if (!response.ok) {
       const error = await response.text()
-      return Response.json({ error: "AI model error: " + error }, { status: 500 })
+      return Response.json({ error: error }, { status: 500 })
     }
 
     const imageBuffer = await response.arrayBuffer()

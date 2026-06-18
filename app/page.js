@@ -190,7 +190,13 @@ export default function Home() {
               </label>
             ) : (
               <div className={styles.previewArea}>
-                <Image src={preview} alt="Room Preview" style={{ width: '100%', maxHeight: '350px', objectFit: 'cover', borderRadius: '15px' }} />
+                <Image
+                  src={preview}
+                  alt="Room Preview"
+                  width={800}
+                  height={350}
+                  style={{ width: '100%', height: '350px', objectFit: 'cover', borderRadius: '15px' }}
+                />
                 <button onClick={() => setPreview(null)} className={styles.changeBtn}>
                   <i className="fas fa-redo"></i> Change Photo
                 </button>
